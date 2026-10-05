@@ -10,6 +10,11 @@
   const status = document.querySelector('#status');
   const ctx = canvas.getContext('2d', { alpha: false });
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const mobileMotion = matchMedia('(pointer: coarse), (max-width: 600px)');
+  let resumeAt = 0, touching = false, suspended = false;
+  const hint = document.querySelector('.hint');
+  function updateHint() { hint.textContent = mobileMotion.matches ? 'TOUCH TO BE SEEN' : 'MOVE TO BE SEEN'; }
+  updateHint();
   const idleImage = new Image(), sheet = new Image();
   const gazeFrames = window.EYE_GAZE_FRAMES;
   const iris = { x: 951, y: 560, radius: 53, travelX: 34, travelY: 22 };
@@ -98,6 +103,15 @@
   }
   function tick(time) {
     raf = 0;
+    const automatic = mobileMotion.matches && !reducedMotion.matches && !interactionLocked && !document.hidden && !suspended;
+    if (automatic && previousTime && time - previousTime < 32) {
+      raf = requestAnimationFrame(tick); return;
+    }
+    if (automatic && !touching && time >= resumeAt) {
+      targetX = Math.sin(time / 1700) * .70;
+      targetY = Math.sin(time / 2600) * .32;
+      resting = false;
+    }
     const dt = previousTime ? Math.min((time - previousTime) / 1000, .05) : 1 / 60;
     previousTime = time;
     const easing = 1 - Math.exp(-(resting ? 7.5 : 12) * dt);
@@ -107,7 +121,7 @@
       currentX = targetX; currentY = targetY;
     }
     render();
-    if (currentX !== targetX || currentY !== targetY) raf = requestAnimationFrame(tick);
+    if (automatic || currentX !== targetX || currentY !== targetY) raf = requestAnimationFrame(tick);
     else previousTime = 0;
   }
   function wake() { if (ready && !raf) raf = requestAnimationFrame(tick); }
@@ -123,24 +137,34 @@
     canvas.height = Math.max(1, Math.round(rect.height * ratio));
     render(true);
   }
-  hero.addEventListener('pointermove', event => {
+  function trackPointer(event) {
     if (reducedMotion.matches || interactionLocked) return;
+    resumeAt = performance.now() + 2400;
     [targetX, targetY] = pointerTarget(event.clientX, event.clientY);
     resting = false;
     wake();
+  }
+  hero.addEventListener('pointermove', trackPointer, { passive: true });
+  hero.addEventListener('pointerdown', event => {
+    if (event.target.closest('button')) return;
+    touching = event.pointerType !== 'mouse';
+    trackPointer(event);
   }, { passive: true });
   hero.addEventListener('hero:prepare-entry', () => { interactionLocked = true; idle(); });
-  hero.addEventListener('hero:reset-entry', () => { interactionLocked = false; idle(true); });
+  hero.addEventListener('hero:reset-entry', () => { interactionLocked = false; idle(true); wake(); });
   hero.addEventListener('pointerleave', () => idle());
-  hero.addEventListener('pointercancel', () => idle());
-  hero.addEventListener('pointerup', event => { if (event.pointerType === 'touch') idle(); });
-  window.addEventListener('blur', () => idle());
-  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) idle(true); });
+  function releaseTouch() { touching = false; resumeAt = performance.now() + 2400; idle(); }
+  hero.addEventListener('pointercancel', releaseTouch);
+  hero.addEventListener('pointerup', event => { if (event.pointerType !== 'mouse') releaseTouch(); });
+  window.addEventListener('blur', () => { suspended = true; touching = false; idle(); });
+  window.addEventListener('focus', () => { suspended = false; wake(); });
+  mobileMotion.addEventListener('change', () => { updateHint(); wake(); });
+  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) idle(true); else wake(); });
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       if (raf) cancelAnimationFrame(raf);
       raf = 0; previousTime = 0; idle(true);
-    }
+    } else wake();
   });
   new ResizeObserver(resize).observe(canvas);
   hero.dataset.renderMode = useFrames ? 'frames' : 'rigid';
