@@ -39,6 +39,7 @@ canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%
   .intro-skip { top: 18px; right: 18px; }
   .entrance { height: 76svh; min-height: 480px; max-height: 650px; }
   .scene::after { background: linear-gradient(180deg, rgb(0 0 0 / .2), transparent 25%, transparent 60%, rgb(16 16 16 / .9) 79%, #101010); }
+  .scene { touch-action: pan-y; }
   .topline { top: 22px; left: 18px; right: 18px; font-size: 10px; gap: 12px; }
   .fallback-photo { object-fit: contain; object-position: center bottom; }
   .continuation { padding: 25px 22px 60px; }

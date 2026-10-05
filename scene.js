@@ -12,6 +12,7 @@ let ready = false;
 let currentScroll = 0;
 let foregroundOrigin = 0;
 let photoAspect = 1200 / 798;
+let touchingScene = false, resumeMotionAt = 0, lastRenderTime = 0;
 
 const vertexShader = `
   varying vec2 vUv;
@@ -101,19 +102,28 @@ function layout() {
   schedule();
 }
 
-function render() {
+function render(time = performance.now()) {
   currentFrame = 0;
+  const mobile = width < 600;
+  const automatic = mobile && visible && !document.hidden && !reducedMotion.matches && !document.documentElement.classList.contains('intro-active');
+  if (automatic && time - lastRenderTime < 32) { schedule(); return; }
+  lastRenderTime = time;
+  if (automatic && !touchingScene && time >= resumeMotionAt) {
+    target.set(Math.sin(time / 2800) * .45, Math.sin(time / 3700) * .28);
+  }
   const dt = 0.075;
   pointer.lerp(reducedMotion.matches ? new THREE.Vector2() : target, dt);
   currentScroll += (window.scrollY - currentScroll) * dt;
   const scroll = reducedMotion.matches || width >= 600 ? 0 : Math.min(currentScroll / height, 1);
-  foreground.position.x = (width < 600 ? -width * .04 : 0) + pointer.x * 7;
+  foreground.position.x = (mobile ? -width * .04 : 0) + pointer.x * (mobile ? 10 : 7);
   foreground.position.y = foregroundOrigin - pointer.y * 4 + scroll * 20;
-  logo.position.x = -pointer.x * 5;
+  logo.position.x = -pointer.x * (mobile ? 7 : 5);
   logo.position.y = logo.userData.originY + pointer.y * 3 + scroll * 7;
-  background.material.uniforms.offset.value.set(background.userData.originX - pointer.x * 3, pointer.y * 2 + scroll * 2);
+  background.material.uniforms.offset.value.set(background.userData.originX - pointer.x * (mobile ? 5 : 3), pointer.y * 2 + scroll * 2);
+  stage.dataset.parallaxX = pointer.x.toFixed(4);
+  stage.dataset.parallaxY = pointer.y.toFixed(4);
   renderer.render(scene, camera);
-  if (pointer.distanceTo(target) > 0.002 && !reducedMotion.matches || Math.abs(currentScroll - window.scrollY) > 0.5) schedule();
+  if (automatic || pointer.distanceTo(target) > 0.002 && !reducedMotion.matches || Math.abs(currentScroll - window.scrollY) > 0.5) schedule();
 }
 
 async function initialise() {
@@ -163,15 +173,22 @@ async function initialise() {
     document.body.dataset.sceneStatus = 'ready';
     new ResizeObserver(layout).observe(stage);
     new IntersectionObserver(entries => { visible = entries[0].isIntersecting; schedule(); }).observe(stage);
-    stage.addEventListener('pointermove', event => {
-      if (event.pointerType !== 'mouse') return;
+    function trackScene(event) {
+      if (reducedMotion.matches) return;
       const rect = stage.getBoundingClientRect();
-      target.set((event.clientX - rect.left) / width * 2 - 1, (event.clientY - rect.top) / height * 2 - 1);
+      resumeMotionAt = performance.now() + 1800;
+      target.set(THREE.MathUtils.clamp((event.clientX - rect.left) / width * 2 - 1, -1, 1), THREE.MathUtils.clamp((event.clientY - rect.top) / height * 2 - 1, -1, 1));
       schedule();
-    }, { passive: true });
+    }
+    stage.addEventListener('pointermove', trackScene, { passive: true });
+    stage.addEventListener('pointerdown', event => { touchingScene = event.pointerType !== 'mouse'; trackScene(event); }, { passive: true });
+    function releaseScene() { touchingScene = false; resumeMotionAt = performance.now() + 1800; target.set(0, 0); schedule(); }
+    stage.addEventListener('pointerup', releaseScene);
+    stage.addEventListener('pointercancel', releaseScene);
     stage.addEventListener('pointerleave', () => { target.set(0, 0); schedule(); });
     window.addEventListener('scroll', schedule, { passive: true });
     document.addEventListener('visibilitychange', schedule);
+    new MutationObserver(schedule).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     reducedMotion.addEventListener('change', () => { target.set(0, 0); schedule(); });
     canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); ready = false; stage.classList.remove('ready'); document.body.dataset.sceneStatus = 'fallback'; });
     canvas.addEventListener('webglcontextrestored', () => location.reload());
