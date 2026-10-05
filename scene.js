@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import { setupTilt } from './tilt.js';
+
 
 const canvas = document.querySelector('#depth-scene');
 const stage = document.querySelector('.scene');
@@ -14,7 +14,7 @@ let currentScroll = 0;
 let foregroundOrigin = 0;
 let photoAspect = 1200 / 798;
 let touchingScene = false, resumeMotionAt = 0, lastRenderTime = 0;
-let tiltActive = false;
+
 
 const vertexShader = `
   varying vec2 vUv;
@@ -110,7 +110,7 @@ function render(time = performance.now()) {
   const automatic = mobile && visible && !document.hidden && !reducedMotion.matches && !document.documentElement.classList.contains('intro-active');
   if (automatic && time - lastRenderTime < 32) { schedule(); return; }
   lastRenderTime = time;
-  if (automatic && !tiltActive && !touchingScene && time >= resumeMotionAt) {
+  if (automatic && !touchingScene && time >= resumeMotionAt) {
     target.set(Math.sin(time / 2800) * .45, Math.sin(time / 3700) * .28);
   }
   const dt = 0.075;
@@ -192,11 +192,6 @@ async function initialise() {
     document.addEventListener('visibilitychange', schedule);
     new MutationObserver(schedule).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     reducedMotion.addEventListener('change', () => { target.set(0, 0); schedule(); });
-    setupTilt((x, y) => {
-      if (!visible || document.hidden || reducedMotion.matches) return;
-      target.set(x, y);
-      schedule();
-    }, active => { tiltActive = active; target.set(0, 0); schedule(); });
     canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); ready = false; stage.classList.remove('ready'); document.body.dataset.sceneStatus = 'fallback'; });
     canvas.addEventListener('webglcontextrestored', () => location.reload());
   } catch (error) {
