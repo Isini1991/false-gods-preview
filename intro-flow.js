@@ -1,12 +1,9 @@
 (() => {
   'use strict';
-  const storageKey = 'false-gods:intro-entered';
   const params = new URLSearchParams(location.search);
   const force = params.get('intro') === '1';
-  let entered = false;
-  try { entered = sessionStorage.getItem(storageKey) === '1'; } catch {}
-  // Direct section links and return visits remain direct entrances to the music.
-  if (!force && (entered || location.hash || params.get('intro') === '0')) return;
+  // Explicit deep links may bypass the intro; normal reloads show it again.
+  if (!force && (location.hash || params.get('intro') === '0')) return;
 
   const site = document.querySelector('#site-content');
   const overlay = document.createElement('div');
@@ -31,7 +28,6 @@
   async function finish() {
     if (finishing) return;
     finishing = true;
-    try { sessionStorage.setItem(storageKey, '1'); } catch {}
     if (!reduced.matches) {
       try {
         await overlay.animate([{ opacity: 1 }, { opacity: 0 }], {

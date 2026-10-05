@@ -10,14 +10,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Pirata+One&amp;family=Space+Grotesk:wght@400;500&amp;display=swap">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=mobile-fix-2">
   </head>
   <body>
     <main id="site-content">
       <section class="entrance" aria-labelledby="band-name">
         <h1 id="band-name" class="visually-hidden">FALSE GODS</h1>
         <div class="scene" aria-hidden="true">
-          <img class="fallback-photo" src="assets/band-enhanced.png" alt="" fetchpriority="high">
+          <div class="fallback-scene">
+            <img class="fallback-logo" src="assets/false-gods-white.svg" alt="">
+            <img class="fallback-photo" src="assets/band-expanded-v2.png" alt="" fetchpriority="high">
+          </div>
           <canvas id="depth-scene"></canvas>
         </div>
         <div class="topline"><span>Long Island, New York</span><span>Est. 2015</span></div>
@@ -28,7 +31,7 @@
         <h3 class="release-title">Lost in Darkness and Distance</h3>
       </section>
     </main>
-    <script src="intro-flow.js"></script>
-    <script type="module" src="scene.js"></script>
+    <script src="intro-flow.js?v=mobile-fix-2"></script>
+    <script type="module" src="scene.js?v=mobile-fix-2"></script>
   </body>
 </html>

@@ -24,8 +24,6 @@ const vertexShader = `
   }
 `;
 const photoShader = `
-  uniform sampler2D photo;
-  uniform sampler2D cutout;
   uniform sampler2D expanded;
   uniform float bottomFade;
   varying vec2 vUv;
@@ -65,7 +63,7 @@ function schedule() {
 function layout() {
   width = stage.clientWidth;
   height = stage.clientHeight;
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, width < 600 ? 1.5 : 2));
   renderer.setSize(width, height, false);
   camera.left = -width / 2;
   camera.right = width / 2;
@@ -130,21 +128,19 @@ function render(time = performance.now()) {
 
 async function initialise() {
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'low-power', preserveDrawingBuffer: true });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: !matchMedia('(max-width: 600px)').matches, alpha: false, powerPreference: 'low-power', preserveDrawingBuffer: false });
     renderer.setClearColor(0x17191a);
     scene = new THREE.Scene();
     camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
     camera.position.z = 20;
     const loader = new THREE.TextureLoader();
-    const [photo, cutout, plate, mark, expanded] = await Promise.all([
-      loader.loadAsync('assets/band-enhanced.png'),
-      loader.loadAsync('assets/band-cutout.png'),
+    const [plate, mark, expanded] = await Promise.all([
       loader.loadAsync('assets/alley-background.png'),
       loader.loadAsync('assets/false-gods-white.svg'),
       loader.loadAsync('assets/band-expanded-v2.png'),
     ]);
     photoAspect = expanded.image.width / expanded.image.height;
-    [photo, cutout, plate, mark, expanded].forEach(texture => {
+    [plate, mark, expanded].forEach(texture => {
       texture.colorSpace = THREE.NoColorSpace;
       texture.minFilter = THREE.LinearFilter;
       texture.magFilter = THREE.LinearFilter;
@@ -157,7 +153,7 @@ async function initialise() {
     }));
     foreground = new THREE.Mesh(geometry, new THREE.ShaderMaterial({
       vertexShader, fragmentShader: photoShader, transparent: true, depthWrite: false,
-      uniforms: { photo: { value: photo }, cutout: { value: cutout }, expanded: { value: expanded }, bottomFade: { value: 0 } },
+      uniforms: { expanded: { value: expanded }, bottomFade: { value: 0 } },
     }));
     logo = new THREE.Mesh(geometry, new THREE.ShaderMaterial({
       vertexShader,

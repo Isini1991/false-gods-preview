@@ -14,10 +14,12 @@ a:focus-visible { outline: 2px solid white; outline-offset: 8px; }
 .entrance { position: relative; height: 90svh; min-height: 510px; isolation: isolate; background: #222728; }
 .scene { position: absolute; inset: 0; overflow: hidden; }
 .scene::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgb(0 0 0 / .13), transparent 25%, transparent 68%, rgb(16 16 16 / .92)); }
-.fallback-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+.fallback-scene { position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / .42), rgb(0 0 0 / .42)), url('assets/alley-background.png') center 25% / cover; }
+.fallback-logo { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: min(50vw, 46svh, 430px); opacity: .94; }
+.fallback-photo { position: absolute; display: block; width: 98%; height: auto; bottom: -18px; left: 50%; transform: translateX(-50%); }
 canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 350ms ease; }
 .scene.ready canvas { opacity: 1; }
-.scene.ready .fallback-photo { visibility: hidden; }
+.scene.ready .fallback-scene { visibility: hidden; }
 .topline { position: absolute; top: 28px; left: 32px; right: 32px; display: flex; justify-content: space-between; gap: 20px; font-family: var(--font-detail); font-size: 12px; line-height: 1.5; text-shadow: 0 1px 8px #000; z-index: 2; }
 .scroll-link { position: absolute; z-index: 2; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 12px 22px; font-size: 14px; text-decoration: none; text-shadow: 0 1px 5px #000; }
 .scroll-line { display: block; height: 25px; width: 1px; background: #f5f5f5; transform-origin: top; }
@@ -41,7 +43,8 @@ canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%
   .scene::after { background: linear-gradient(180deg, rgb(0 0 0 / .2), transparent 25%, transparent 60%, rgb(16 16 16 / .9) 79%, #101010); }
   .scene { touch-action: pan-y; }
   .topline { top: 22px; left: 18px; right: 18px; font-size: 10px; gap: 12px; }
-  .fallback-photo { object-fit: contain; object-position: center bottom; }
+  .fallback-logo { width: min(66vw, 290px); }
+  .fallback-photo { width: 130%; max-width: none; bottom: auto; top: calc(60px + min(47.52vw, 208.8px) - 2.9vw); left: 46%; mask-image: linear-gradient(to bottom, #000 70%, transparent); -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent); }
   .continuation { padding: 25px 22px 60px; }
   .release-title { font-size: clamp(28px, 7.5vw, 36px); }
   .scroll-link { bottom: 12px; }
