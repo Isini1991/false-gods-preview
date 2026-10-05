@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FALSE GODS — Watchful Eye</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&amp;display=swap">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg class="filter-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0">
+    <defs>
+      <filter id="clean-background" color-interpolation-filters="sRGB">
+        <feComponentTransfer>
+          <feFuncR id="clean-red" type="table" tableValues="0 1" />
+          <feFuncG id="clean-green" type="table" tableValues="0 1" />
+          <feFuncB id="clean-blue" type="table" tableValues="0 1" />
+        </feComponentTransfer>
+      </filter>
+    </defs>
+  </svg>
+  <main class="hero" aria-label="Interactive eye animation" tabindex="-1">
+    <canvas id="eye" role="img" aria-label="An illustrated eye inside a triangle follows your movement"></canvas>
+    <div class="hero-actions">
+      <button class="enter-button" type="button" data-enter-url="">ENTER</button>
+      <span class="hint">MOVE TO BE SEEN</span>
+    </div>
+    <p id="status" role="status">Loading the eye…</p>
+    <div class="entry-layer" hidden>
+      <svg class="entry-logo" viewBox="0 0 959 958" role="img" aria-label="FALSE GODS">
+        <defs>
+          <clipPath id="fixed-logo-triangle" clipPathUnits="userSpaceOnUse">
+            <polygon points="508,744 398,934 616,932" />
+          </clipPath>
+          <mask id="logo-reveal" maskUnits="userSpaceOnUse" x="0" y="0" width="959" height="958">
+            <rect width="959" height="958" fill="black" />
+            <rect class="logo-triangle-mask" x="390" y="744" width="240" height="214" fill="white" opacity="0" />
+            <path class="logo-ring-mask" d="M480 899 A420 420 0 0 1 480 59" fill="none" stroke="white" stroke-width="160" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" />
+            <path class="logo-ring-mask" d="M480 899 A420 420 0 0 0 480 59" fill="none" stroke="white" stroke-width="160" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" />
+            <rect class="logo-text-mask" y="294" width="959" height="498" fill="white" opacity="0" />
+            <rect class="logo-complete-mask" width="959" height="958" fill="white" opacity="0" />
+          </mask>
+        </defs>
+        <g mask="url(#logo-reveal)">
+          <image class="logo-theme-art" href="assets/full-logo.png" width="959" height="958" />
+          <image href="assets/full-logo.png" width="959" height="958" clip-path="url(#fixed-logo-triangle)" />
+        </g>
+      </svg>
+    </div>
+  </main>
+  <script src="gaze-map.js"></script>
+  <script src="hero.js"></script>
+  <script src="entry.js"></script>
+  <script src="bridge.js"></script>
+</body>
+</html>
+

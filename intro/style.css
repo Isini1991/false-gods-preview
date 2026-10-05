@@ -1,0 +1,25 @@
+:root { color-scheme: dark; --background: #000; --foreground: #fff; --muted: #aaa; background: var(--background); font-family: Georgia, serif; }
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--foreground); background: var(--background); }
+.hero { height: 100svh; min-height: 360px; position: relative; display: grid; place-items: center; overflow: hidden; background: var(--background); }
+canvas { display: block; width: min(100vw, 150svh, 1100px); height: auto; aspect-ratio: 16 / 9; filter: url(#clean-background); clip-path: polygon(50.2083% 25.0926%, 36.5625% 66.4815%, 64.0625% 66.4815%); }
+.hero-actions { position: absolute; top: calc(50% + min(9.2vw, 13.8svh, 101px) + 28px); display: grid; justify-items: center; gap: 16px; }
+.enter-button { min-width: 150px; min-height: 46px; padding: 14px 24px 14px 28px; border: 1px solid var(--foreground); background: var(--background); color: var(--foreground); font: 11px/1.4 system-ui, sans-serif; letter-spacing: .35em; cursor: pointer; transition: transform 160ms ease; }
+.enter-button:hover { background: var(--foreground); color: var(--background); transform: translateY(-1px); }
+.enter-button:active { transform: translateY(0); }
+.enter-button:focus-visible { outline: 2px solid var(--foreground); outline-offset: 5px; }
+.hint { font: 10px/1.5 'IBM Plex Mono', monospace; letter-spacing: .25em; color: var(--muted); pointer-events: none; }
+.enter-button { font-family: 'IBM Plex Mono', monospace; }
+#status { position: absolute; font: 12px system-ui, sans-serif; color: var(--muted); }
+.filter-definitions { position: absolute; pointer-events: none; }
+.entry-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.entry-layer[hidden] { display: none; }
+.entry-logo { position: absolute; width: min(65vw, 62svh, 440px); aspect-ratio: 959 / 958; left: 50%; top: 50%; transform: translate(-50%, -50%); mix-blend-mode: screen; }
+.hero.is-entered #eye, .hero.is-entered .hero-actions { visibility: hidden; pointer-events: none; }
+.hero.is-entered.has-site-content { height: 140px; min-height: 140px; }
+.enter-button:disabled { cursor: default; }
+@media (max-width: 600px) {
+  canvas { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(180vw, 120svh); max-width: none; }
+  .hero-actions { top: calc(50% + min(16.56vw, 11.04svh) + 28px); }
+}
+@media (prefers-reduced-motion: reduce) { .hint { display: none; } .enter-button { transition: none; } }

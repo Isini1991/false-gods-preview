@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#101010">
+    <meta name="description" content="False Gods. Long Island, New York. Music and live archives.">
+    <title>FALSE GODS</title>
+    <link rel="icon" type="image/svg+xml" href="assets/false-gods-white.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Pirata+One&amp;family=Space+Grotesk:wght@400;500&amp;display=swap">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main id="site-content">
+      <section class="entrance" aria-labelledby="band-name">
+        <h1 id="band-name" class="visually-hidden">FALSE GODS</h1>
+        <div class="scene" aria-hidden="true">
+          <img class="fallback-photo" src="assets/band-enhanced.png" alt="" fetchpriority="high">
+          <canvas id="depth-scene"></canvas>
+        </div>
+        <div class="topline"><span>Long Island, New York</span><span>Est. 2015</span></div>
+        <a class="scroll-link" href="#releases">Releases<span class="scroll-line" aria-hidden="true"></span></a>
+      </section>
+      <section class="continuation" id="releases" aria-labelledby="releases-title">
+        <div class="release-heading"><h2 id="releases-title">Releases</h2><a href="https://falsegods1.bandcamp.com/" target="_blank" rel="noopener noreferrer">Bandcamp</a></div>
+        <h3 class="release-title">Lost in Darkness and Distance</h3>
+      </section>
+    </main>
+    <script src="intro-flow.js"></script>
+    <script type="module" src="scene.js"></script>
+  </body>
+</html>
